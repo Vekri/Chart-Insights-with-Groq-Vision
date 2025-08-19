@@ -1,7 +1,6 @@
 import streamlit as st
-import openai
 import base64
-from io import BytesIO
+from openai import OpenAI
 
 # === Streamlit UI Config ===
 st.set_page_config(page_title="Chart Insights with LLM", layout="centered")
@@ -38,11 +37,12 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# === OpenAI API Key Setup ===
-openai.api_key = st.secrets.get("OPENAI_API_KEY")
-if not openai.api_key:
+# === OpenAI API Setup ===
+if "OPENAI_API_KEY" not in st.secrets:
     st.error("🚨 Please set your OpenAI API key in Streamlit secrets")
     st.stop()
+
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # === App Header ===
 st.title("📊 Chart Insights with LLM")
@@ -62,7 +62,7 @@ if image_data:
         with st.spinner("Analyzing image..."):
             try:
                 prompt = f"""
-                You are a data analyst AI. Interpret the uploaded chart and provide:
+                You are a professional data analyst AI. Analyze the uploaded chart image and provide:
 
                 1. Key trends
                 2. Anomalies
@@ -71,15 +71,18 @@ if image_data:
 
                 The chart image is provided as base64: {img_base64}
                 """
-                response = openai.ChatCompletion.create(
+                
+                response = client.chat.completions.create(
                     model="gpt-4o-mini",
                     messages=[{"role": "user", "content": prompt}],
                     temperature=0.3,
                     max_tokens=500
                 )
+
                 insights = response.choices[0].message.content
                 st.success("✅ Analysis Complete")
                 st.subheader("📈 Insights & Recommendations")
                 st.write(insights)
+
             except Exception as e:
                 st.error(f"Error analyzing image: {e}")

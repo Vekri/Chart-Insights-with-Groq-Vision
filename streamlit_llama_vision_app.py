@@ -38,7 +38,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # === Groq API Setup ===
-GROQ_API_KEY = ".streamlit/secrets.toml"
+GROQ_API_KEY = r".streamlit/secrets.toml"
 if not GROQ_API_KEY:
     st.error("🚨 Please set your `GROQ_API_KEY`")
 else:
@@ -79,4 +79,5 @@ if image_data:
                 st.write(insights)
             except Exception as e:
                 st.error(f"Error analyzing image: {e}")
+
 

@@ -13,3 +13,5 @@ sentencepiece
 protobuf
 typing-extensions
 accelerate
+base64
+Groq

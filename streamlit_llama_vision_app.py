@@ -38,11 +38,11 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # === Groq API Setup ===
-api_key = st.secrets.get("GROQ_API_KEY", None)
-if not api_key:
-    st.info("Please add the Groq API key in your secrets.toml")
+GROQ_API_KEY = "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"
+if not GROQ_API_KEY:
+    st.error("🚨 Please set your `GROQ_API_KEY`")
 else:
-    client = Groq(api_key=api_key)  # ✅ Fixed variable
+    client = Groq(api_key=GROQ_API_KEY)
 
 # === App Header ===
 st.title("📊 Chart Insights with Groq Vision")

@@ -42,7 +42,7 @@ api_key = st.secrets["GROQ_API_KEY"]
 if not api_key:
     st.info("Please add the groq api key")
 else:
-    client = Groq(GROQ_API_KEY=api_key)
+    client = Groq(api_key=GROQ_API_KEY)
 
 # === App Header ===
 st.title("📊 Chart Insights with Groq Vision")
@@ -79,5 +79,6 @@ if image_data:
                 st.write(insights)
             except Exception as e:
                 st.error(f"Error analyzing image: {e}")
+
 
 

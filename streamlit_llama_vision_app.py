@@ -38,8 +38,15 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # === Groq API Setup ===
-GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
-client = Groq(api_key=GROQ_API_KEY)
+st.sidebar.header("🔑 API Configuration")
+GROQ_API_KEY = st.sidebar.text_input("Enter your GROQ_API_KEY", type="password")
+
+if not GROQ_API_KEY:
+    st.warning("⚠️ Please enter your GROQ_API_KEY in the sidebar to continue.")
+    st.stop()
+else:
+    client = Groq(api_key=GROQ_API_KEY)
+
 # === App Header ===
 st.title("📊 Chart Insights with Groq Vision")
 st.subheader("Upload or capture a chart to get trends, anomalies & recommendations")
@@ -58,19 +65,13 @@ if image_data:
         with st.spinner("Analyzing image..."):
             try:
                 response = client.chat.completions.create(
-                    model="llama-3.2-11b-vision-preview",  # ✅ vision-supported model
+                    model="meta-llama/llama-4-scout-17b-16e-instruct",
                     messages=[
-                        {
-                            "role": "system",
-                            "content": "You are an expert data analyst that interprets charts and dashboards."
-                        },
-                        {
-                            "role": "user",
-                            "content": [
-                                {"type": "text", "text": "Provide:\n1. Key trends\n2. Anomalies\n3. Business insights\n4. Next steps."},
-                                {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{img_base64}"}}
-                            ]
-                        }
+                        {"role": "system", "content": "You are an expert data analyst that interprets charts and dashboards."},
+                        {"role": "user", "content": [
+                            {"type": "text", "text": "Provide:\n1. Key trends\n2. Anomalies\n3. Business insights\n4. Next steps."},
+                            {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{img_base64}"}}
+                        ]}
                     ],
                     temperature=0.3,
                     max_tokens=500
@@ -81,5 +82,3 @@ if image_data:
                 st.write(insights)
             except Exception as e:
                 st.error(f"Error analyzing image: {e}")
-
-

@@ -41,7 +41,8 @@ st.markdown("""
 try:
     GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
 except KeyError:
-    st.error("🚨 Please set your `GROQ_API_KEY` in .streamlit/secrets.toml")
+    st.error("🚨 Please set your `GROQ_API_KEY` in Chart-Insights-with-Groq-Vision/.streamlit
+/secrets.toml")
     st.stop()
 
 client = Groq(api_key=GROQ_API_KEY)
@@ -86,3 +87,4 @@ if image_data:
                 st.write(insights)
             except Exception as e:
                 st.error(f"Error analyzing image: {e}")
+

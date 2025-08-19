@@ -1,0 +1,15 @@
+streamlit
+pandas
+numpy
+matplotlib
+seaborn
+scikit-learn
+statsmodels
+joblib
+transformers
+langdetect
+torch
+sentencepiece
+protobuf
+typing-extensions
+accelerate

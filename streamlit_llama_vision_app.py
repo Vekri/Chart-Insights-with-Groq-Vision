@@ -38,11 +38,13 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # === Groq API Setup ===
-GROQ_API_KEY = r".streamlit/secrets.toml"
-if not GROQ_API_KEY:
-    st.error("🚨 Please set your `GROQ_API_KEY`")
-else:
-    client = Groq(api_key=GROQ_API_KEY)
+try:
+    GROQ_API_KEY = st.secrets["GROQ_API_KEY"]
+except KeyError:
+    st.error("🚨 Please set your `GROQ_API_KEY` in .streamlit/secrets.toml")
+    st.stop()
+
+client = Groq(api_key=GROQ_API_KEY)
 
 # === App Header ===
 st.title("📊 Chart Insights with Groq Vision")
@@ -50,7 +52,12 @@ st.subheader("Upload or capture a chart to get trends, anomalies & recommendatio
 
 # === Image Input ===
 uploaded_file = st.file_uploader("📂 Upload a chart image", type=["png", "jpg", "jpeg"])
-camera_file = st.camera_input("📸 Or take a photo")
+
+# Camera input may not work in all cloud environments
+try:
+    camera_file = st.camera_input("📸 Or take a photo")
+except Exception:
+    camera_file = None
 
 image_data = uploaded_file or camera_file
 if image_data:
@@ -79,5 +86,3 @@ if image_data:
                 st.write(insights)
             except Exception as e:
                 st.error(f"Error analyzing image: {e}")
-
-

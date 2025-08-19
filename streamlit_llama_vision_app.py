@@ -74,7 +74,7 @@ if image_data:
                 """
                 
                 response = client.chat.completions.create(
-                    model="gpt-4o-mini",
+                    model="gpt-4.1-mini",
                     messages=[{"role": "user", "content": prompt}],
                     temperature=0.3,
                     max_tokens=500
@@ -87,3 +87,4 @@ if image_data:
 
             except Exception as e:
                 st.error(f"Error analyzing image: {e}")
+

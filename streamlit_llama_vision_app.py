@@ -39,7 +39,7 @@ st.markdown("""
 
 # === Groq API Setup ===
 api_key = st.secrets.get("groq_api_key")
-client = Groq(api_key=GROQ_API_KEY)
+client = Groq(api_key=groq_api_key)
 # === App Header ===
 st.title("📊 Chart Insights with Groq Vision")
 st.subheader("Upload or capture a chart to get trends, anomalies & recommendations")
@@ -75,6 +75,7 @@ if image_data:
                 st.write(insights)
             except Exception as e:
                 st.error(f"Error analyzing image: {e}")
+
 
 
 

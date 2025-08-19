@@ -1,6 +1,6 @@
 import streamlit as st
+from groq import Groq
 import base64
-import groq  # ✅ Import the package, not just the class
 
 # === Streamlit UI Config ===
 st.set_page_config(page_title="Chart Insights with Groq", layout="centered")
@@ -37,16 +37,12 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# === API Key Input ===
-st.sidebar.header("🔑 API Configuration")
-GROQ_API_KEY = st.sidebar.text_input("Enter your GROQ_API_KEY", type="password")
-
+# === Groq API Setup ===
+GROQ_API_KEY = "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"
 if not GROQ_API_KEY:
-    st.warning("⚠️ Please enter your GROQ_API_KEY in the sidebar to continue.")
-    st.stop()
-
-# === Initialize Groq Client ===
-client = groq.Groq(api_key=GROQ_API_KEY)
+    st.error("🚨 Please set your `GROQ_API_KEY`")
+else:
+    client = Groq(api_key=GROQ_API_KEY)
 
 # === App Header ===
 st.title("📊 Chart Insights with Groq Vision")
@@ -77,13 +73,9 @@ if image_data:
                     temperature=0.3,
                     max_tokens=500
                 )
-
-                # ✅ Extract response correctly
-                insights = response.choices[0].message.content  
-
+                insights = response.choices[0].message.content
                 st.success("✅ Analysis Complete")
                 st.subheader("📈 Insights & Recommendations")
                 st.write(insights)
-
             except Exception as e:
                 st.error(f"Error analyzing image: {e}")

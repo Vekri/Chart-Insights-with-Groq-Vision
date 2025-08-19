@@ -39,7 +39,7 @@ st.markdown("""
 
 # === Groq API Setup ===
 api_key = st.secrets.get("groq_api_key")
-
+client = Groq(api_key=GROQ_API_KEY)
 # === App Header ===
 st.title("📊 Chart Insights with Groq Vision")
 st.subheader("Upload or capture a chart to get trends, anomalies & recommendations")

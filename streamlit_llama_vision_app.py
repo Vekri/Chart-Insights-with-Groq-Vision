@@ -39,11 +39,11 @@ st.markdown("""
 
 # === Groq API Setup ===
 GROQ_API_KEY = st.text_input("Enter your GROQ_API_KEY", type="password")
-if not GROQ_API_KEY:
-    st.error("🚨 Please set your `GROQ_API_KEY`")
-else:
+client = None
+if GROQ_API_KEY:
     client = Groq(api_key=GROQ_API_KEY)
-
+else:
+    st.error("🚨 Please set your `GROQ_API_KEY`")
 
 # === App Header ===
 st.title("📊 Chart Insights with Groq Vision")
@@ -52,14 +52,15 @@ st.subheader("Upload or capture a chart to get trends, anomalies & recommendatio
 # === Image Input ===
 uploaded_file = st.file_uploader("📂 Upload a chart image", type=["png", "jpg", "jpeg"])
 camera_file = st.camera_input("📸 Or take a photo")
-
 image_data = uploaded_file or camera_file
+
+# === Analyze Button & Chart Processing ===
 if image_data:
     st.image(image_data, caption="Uploaded Chart", width=600)
     img_bytes = image_data.getvalue()
     img_base64 = base64.b64encode(img_bytes).decode("utf-8")
 
-    if st.button("🔍 Analyze Chart"):
+    if client and st.button("🔍 Analyze Chart"):
         with st.spinner("Analyzing image..."):
             try:
                 response = client.chat.completions.create(

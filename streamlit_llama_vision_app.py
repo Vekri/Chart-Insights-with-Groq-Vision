@@ -1,6 +1,6 @@
 import streamlit as st
 import base64
-from openai import OpenAI
+from groq import Groq
 
 # === Streamlit UI Config ===
 st.set_page_config(page_title="Chart Insights with LLM", layout="centered")
@@ -37,18 +37,18 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# === OpenAI API Setup ===
-if "OPENAI_API_KEY" not in st.secrets:
-    st.error("🚨 Please set your OpenAI API key in Streamlit secrets")
+# === Groq API Setup ===
+if "GROQ_API_KEY" not in st.secrets:
+    st.error("🚨 Please set your Groq API key in Streamlit secrets")
     st.stop()
 
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 
 # === App Header ===
-st.title("📊 Chart Insights with LLM")
+st.title("📊 Chart Insights with LLM (Groq)")
 st.subheader("Upload or capture a chart to get trends, anomalies & recommendations")
 
-# === Image Input (rear camera preference on mobile) ===
+# === Image Input ===
 uploaded_file = st.file_uploader("📂 Upload a chart image", type=["png", "jpg", "jpeg"])
 camera_file = st.camera_input("📸 Or take a photo (rear camera preferred)", key="rear_camera_input")
 
@@ -62,19 +62,19 @@ if image_data:
     if st.button("🔍 Analyze Chart"):
         with st.spinner("Analyzing image..."):
             try:
+                # Groq models don't take images natively → send as base64 text
                 prompt = f"""
-                You are a professional data analyst AI. Analyze the uploaded chart image and provide:
-
+                You are a professional data analyst AI. A chart image (base64 encoded) is provided.
+                Extract insights as if you could see it. Provide:
                 1. Key trends
                 2. Anomalies
                 3. Business insights
                 4. Recommended next steps
-
-                The chart image is provided as base64: {img_base64}
+                Base64 (truncated): {img_base64[:500]}...
                 """
-                
+
                 response = client.chat.completions.create(
-                    model="gpt-4.1-mini",
+                    model="llama-3.1-8b-instant",  # Free, fast model
                     messages=[{"role": "user", "content": prompt}],
                     temperature=0.3,
                     max_tokens=500
@@ -87,4 +87,3 @@ if image_data:
 
             except Exception as e:
                 st.error(f"Error analyzing image: {e}")
-

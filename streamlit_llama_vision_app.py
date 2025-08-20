@@ -48,7 +48,7 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 st.title("📊 Chart Insights with LLM")
 st.subheader("Upload or capture a chart to get trends, anomalies & recommendations")
 
-# === Image Input (rear camera preference on mobile) ===
+# === Image Input ===
 uploaded_file = st.file_uploader("📂 Upload a chart image", type=["png", "jpg", "jpeg"])
 camera_file = st.camera_input("📸 Or take a photo (rear camera preferred)", key="rear_camera_input")
 

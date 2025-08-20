@@ -1,7 +1,6 @@
 import streamlit as st
 import base64
-import os
-from groq import Groq
+from openai import OpenAI
 
 # === Streamlit UI Config ===
 st.set_page_config(page_title="Chart Insights with LLM", layout="centered")
@@ -38,20 +37,18 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# === Groq API Setup ===
-if "GROQ_API_KEY" not in st.secrets:
-    st.error("🚨 Please set your Groq API key in Streamlit secrets")
+# === OpenAI API Setup ===
+if "OPENAI_API_KEY" not in st.secrets:
+    st.error("🚨 Please set your OpenAI API key in Streamlit secrets")
     st.stop()
 
-# Make sure Groq SDK can read the API key
-os.environ["GROQ_API_KEY"] = st.secrets["GROQ_API_KEY"]
-client = Groq()
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # === App Header ===
-st.title("📊 Chart Insights with LLM (Groq)")
+st.title("📊 Chart Insights with LLM")
 st.subheader("Upload or capture a chart to get trends, anomalies & recommendations")
 
-# === Image Input ===
+# === Image Input (rear camera preference on mobile) ===
 uploaded_file = st.file_uploader("📂 Upload a chart image", type=["png", "jpg", "jpeg"])
 camera_file = st.camera_input("📸 Or take a photo (rear camera preferred)", key="rear_camera_input")
 
@@ -65,24 +62,18 @@ if image_data:
     if st.button("🔍 Analyze Chart"):
         with st.spinner("Analyzing image..."):
             try:
-                # Groq models don’t natively process images → we send base64 as context
                 prompt = f"""
-                You are a professional data analyst AI. 
-                A chart image is provided (base64 encoded). 
-                Even though you cannot render it, simulate that you can "see" it 
-                and provide insights as if you analyzed the chart.
-
-                Please give:
+                You are a professional data analyst AI. Analyze the uploaded chart image and provide:
                 1. Key trends
                 2. Anomalies
                 3. Business insights
                 4. Recommended next steps
 
-                Base64 preview (first 500 chars only): {img_base64[:500]}...
+                The chart image is provided as base64: {img_base64}
                 """
 
                 response = client.chat.completions.create(
-                    model="llama-3.1-8b-instant",  # Free + fast model
+                    model="gpt-4.1-mini",
                     messages=[{"role": "user", "content": prompt}],
                     temperature=0.3,
                     max_tokens=500

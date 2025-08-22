@@ -28,13 +28,21 @@ st.markdown("""
 
 # === API Setup ===
 openai_client, groq_client = None, None
-if "OPENAI_API_KEY" in st.secrets:
-    openai_client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-if "GROQ_API_KEY" in st.secrets:
-    groq_client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+
+if st.secrets.get("OPENAI_API_KEY") and st.secrets["OPENAI_API_KEY"].startswith("sk-"):
+    try:
+        openai_client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+    except Exception as e:
+        st.warning(f"⚠️ OpenAI init failed: {e}")
+
+if st.secrets.get("GROQ_API_KEY") and st.secrets["GROQ_API_KEY"].startswith("gsk_"):
+    try:
+        groq_client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+    except Exception as e:
+        st.warning(f"⚠️ Groq init failed: {e}")
 
 if not (openai_client or groq_client):
-    st.error("🚨 Please set at least one API key in Streamlit secrets: OPENAI_API_KEY or GROQ_API_KEY")
+    st.error("🚨 No valid API key found. Please set OPENAI_API_KEY and/or GROQ_API_KEY in secrets.")
     st.stop()
 
 # === App Header ===
@@ -72,11 +80,11 @@ if image_data:
                 except Exception as e:
                     st.warning(f"⚠️ OpenAI failed: {e}")
 
-            # === Fallback to Groq (LLaVA) ===
+            # === Fallback to Groq ===
             if insights is None and groq_client:
                 try:
                     response = groq_client.chat.completions.create(
-                        model="llava-v1.5-7b-4096-preview",
+                        model="llama-3.2-11b-vision-preview",   # replacement for LLaVA
                         messages=[
                             {"role": "user", "content": [
                                 {"type": "text", "text": "Analyze this chart and provide:\n1. Key trends\n2. Anomalies\n3. Insights\n4. Recommendations"},
@@ -87,7 +95,7 @@ if image_data:
                     )
                     insights = response.choices[0].message.content
                 except Exception as e:
-                    st.error(f"🚨 Both OpenAI & Groq failed: {e}")
+                    st.error(f"🚨 Groq fallback failed: {e}")
 
             # === Display Results ===
             if insights:

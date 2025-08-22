@@ -3,6 +3,7 @@ import base64
 import io
 import mimetypes
 from typing import Optional, Tuple
+import matplotlib.pyplot as plt
 
 import streamlit as st
 import pandas as pd
@@ -255,3 +256,4 @@ st.markdown(
     "For data, include key metrics and a time/index column where possible.</p>",
     unsafe_allow_html=True
 )
+
